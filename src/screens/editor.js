@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useContext } from "react";
 import {
   View,
   Text,
@@ -6,44 +6,66 @@ import {
   TextInput,
   Dimensions,
   TouchableOpacity,
+  Linking,
 } from "react-native";
+import { WebView } from "react-native-webview";
+import Markdown from "react-native-markdown-renderer";
+import { EditorContext } from "../context/editorContext";
 
 function Editor() {
-  const [note, setNote] = useState("");
+  const [note, setNote] = useState(`# h1 Heading 8-)
+
+| Option | Description |
+| ------ | ----------- |
+| data   | path to data files to supply the data that will be passed into templates. |
+| engine | engine to be used for processing templates. Handlebars is the default. |
+| ext    | extension to be used for dest files. |
+`);
+  const inputRef = useRef();
+  const { marked } = useContext(EditorContext);
 
   return (
     <>
       <View style={styles.container}>
-        <TextInput
-          value={note}
-          onChangeText={setNote}
-          style={{ color: "#0c020b", fontSize: 22 }}
-          multiline={true}
-          autoFocus
-          selectionColor="papayawhip"
-        />
+        {marked === false ? (
+          <TextInput
+            value={note}
+            onChangeText={setNote}
+            //   onSelectionChange={({ nativeEvent: { selection } }) =>
+            //     selectionValue(selection)
+            //   }
+            ref={inputRef}
+            style={{ color: "#0c020b", fontSize: 22 }}
+            multiline={true}
+            selectionColor="#ccc"
+            autoFocus
+            //   selectionColor="papayawhip"
+          />
+        ) : (
+          <Markdown>{note}</Markdown>
+        )}
       </View>
       <View style={styles.bottomContainer}>
         <TouchableOpacity
-          onPress={() => setNote((note) => note + "#")}
+          onPress={() => addAttributes(inputRef.current, "#")}
           style={styles.bottomBtn}
         >
           <Text> # </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setNote((note) => note + "[")}
+          onPress={() => addAttributes(inputRef.current, "[")}
           style={styles.bottomBtn}
         >
           <Text> '[' </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setNote((note) => note + "]")}
+          onPress={() => addAttributes(inputRef.current, "]")}
           style={styles.bottomBtn}
         >
           <Text> ']' </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setNote((note) => note + "*")}
+          onPress={() => addAttributes(inputRef.current, "*")}
           style={styles.bottomBtn}
         >
           <Text> '*' </Text>
@@ -52,6 +74,22 @@ function Editor() {
     </>
   );
 }
+
+const markdownStyles = {
+  heading1: {
+    fontSize: 24,
+    color: "purple",
+  },
+  link: {
+    color: "pink",
+  },
+  mailTo: {
+    color: "orange",
+  },
+  text: {
+    color: "#0c020b",
+  },
+};
 
 const styles = StyleSheet.create({
   container: {

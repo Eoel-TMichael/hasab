@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useContext } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import {
   NavigationContainer,
@@ -8,9 +8,13 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Notes from "./notes";
 import Editor from "./editor";
 
+import { EditorContext } from "../context/editorContext";
+
 const Stack = createNativeStackNavigator();
 
 function Navigation() {
+  const { toggleMarked } = useContext(EditorContext);
+
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -26,13 +30,25 @@ function Navigation() {
           component={Notes}
           options={({ navigation }) => ({
             headerRight: () => (
-              <TouchableOpacity onPress={() => navigation.navigate("Editor")}>
-                <Text>Editor</Text>
+              <TouchableOpacity
+                onPress={() => alert("Settings Page Comming Soon")}
+              >
+                <Text>Settings</Text>
               </TouchableOpacity>
             ),
           })}
         />
-        <Stack.Screen name="Editor" component={Editor} />
+        <Stack.Screen
+          name="Editor"
+          component={Editor}
+          options={({ navigation }) => ({
+            headerRight: () => (
+              <TouchableOpacity onPress={toggleMarked}>
+                <Text>Markdown</Text>
+              </TouchableOpacity>
+            ),
+          })}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
